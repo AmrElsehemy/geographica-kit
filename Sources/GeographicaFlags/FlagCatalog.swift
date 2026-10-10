@@ -8,13 +8,26 @@ public enum FlagCatalog {
         emoji(iso2: country.iso2)
     }
 
+    /// Shown for anything that isn't a two-letter ASCII code, so callers never render garbage.
+    public static let neutralFlag = "🏳️"
+
+    /// The flag emoji for a two-letter ISO 3166-1 alpha-2 code (case-insensitive). Anything else,
+    /// including empty, wrong-length, non-ASCII or non-letter input, returns `neutralFlag`.
     public static func emoji(iso2: String) -> String {
-        var scalars = String.UnicodeScalarView()
-        for scalar in iso2.uppercased().unicodeScalars {
-            guard let base = Unicode.Scalar(0x1F1E6 + scalar.value - 0x41) else { continue }
-            scalars.append(base)
+        let scalars = Array(iso2.unicodeScalars)
+        guard scalars.count == 2 else { return neutralFlag }
+        var result = String.UnicodeScalarView()
+        for scalar in scalars {
+            let upper: UInt32
+            switch scalar.value {
+            case 0x41...0x5A: upper = scalar.value          // A-Z
+            case 0x61...0x7A: upper = scalar.value - 0x20   // a-z
+            default: return neutralFlag
+            }
+            guard let indicator = Unicode.Scalar(0x1F1E6 + upper - 0x41) else { return neutralFlag }
+            result.append(indicator)
         }
-        return String(scalars)
+        return String(result)
     }
 
     public static func difficulty(of country: Country) -> FlagDifficulty {

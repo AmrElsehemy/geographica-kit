@@ -9,6 +9,14 @@ import Testing
         #expect(FlagCatalog.emoji(iso2: "XK") == "🇽🇰")
     }
 
+    @Test func malformedCodesYieldTheNeutralFlagInsteadOfGarbage() {
+        let neutral = FlagCatalog.neutralFlag
+        for bad in ["", "E", "EGY", "1A", "A-", "é", "ÉG", "  ", "ß", "😀😀", "e g", "\u{0}\u{0}"] {
+            #expect(FlagCatalog.emoji(iso2: bad) == neutral, "input: \(bad.debugDescription)")
+        }
+        #expect(FlagCatalog.emoji(iso2: "eg") == "🇪🇬")
+    }
+
     @Test func everyCountryProducesTwoScalars() {
         for country in CountryCatalog.all {
             #expect(FlagCatalog.emoji(for: country).unicodeScalars.count == 2)
