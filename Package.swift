@@ -13,7 +13,11 @@ let package = Package(
     ],
     targets: [
         .target(name: "GeographicaCore"),
-        .target(name: "GeographicaFlags", dependencies: ["GeographicaCore"]),
+        .target(
+            name: "GeographicaFlags",
+            dependencies: ["GeographicaCore"],
+            resources: [.copy("Resources/Flags")]
+        ),
         .testTarget(name: "GeographicaCoreTests", dependencies: ["GeographicaCore"]),
         .testTarget(name: "GeographicaFlagsTests", dependencies: ["GeographicaFlags", "GeographicaCore"])
     ]
